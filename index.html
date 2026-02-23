@@ -1,12 +1,113 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Kampung Web</title>
+<title>🔥 Kampung Theme Engine</title>
+<style>
+body{
+font-family: Arial;
+background:#111;
+color:white;
+text-align:center;
+padding:20px;
+}
+
+canvas{
+max-width:100%;
+border-radius:10px;
+margin-top:10px;
+}
+
+select, button, input{
+padding:10px;
+margin:10px;
+border-radius:6px;
+border:none;
+}
+
+button{
+background:#00c853;
+color:black;
+font-weight:bold;
+cursor:pointer;
+}
+</style>
 </head>
 <body>
 
-<h1>🔥 Website Kamu Sudah Berhasil Dibuat</h1>
-<p>Ini halaman pertama kamu di GitHub.</p>
+<h1>🔥 Kampung Theme Engine</h1>
+
+<input type="file" accept="image/*" onchange="loadImage(event)">
+
+<br>
+
+<select id="theme">
+<option value="ocean">🌊 Ocean Theme</option>
+<option value="forest">🌲 Forest Theme</option>
+<option value="sunset">🌅 Sunset Theme</option>
+<option value="colorful">🎨 Colorful Theme</option>
+</select>
+
+<br>
+
+<button onclick="applyTheme()">Apply Theme</button>
+
+<br>
+
+<canvas id="canvas"></canvas>
+
+<script>
+
+let image = new Image();
+let canvas = document.getElementById("canvas");
+let ctx = canvas.getContext("2d");
+
+function loadImage(event){
+let reader = new FileReader();
+reader.onload = function(e){
+image.src = e.target.result;
+image.onload = function(){
+canvas.width = image.width;
+canvas.height = image.height;
+ctx.drawImage(image,0,0);
+}
+}
+reader.readAsDataURL(event.target.files[0]);
+}
+
+function applyTheme(){
+
+let theme = document.getElementById("theme").value;
+
+let imgData = ctx.getImageData(0,0,canvas.width,canvas.height);
+let data = imgData.data;
+
+for(let i=0;i<data.length;i+=4){
+
+if(theme === "ocean"){
+data[i+2] += 50;
+}
+
+if(theme === "forest"){
+data[i+1] += 40;
+}
+
+if(theme === "sunset"){
+data[i] += 40;
+data[i+1] += 20;
+}
+
+if(theme === "colorful"){
+data[i] += Math.random()*50;
+data[i+1] += Math.random()*50;
+data[i+2] += Math.random()*50;
+}
+
+}
+
+ctx.putImageData(imgData,0,0);
+}
+
+</script>
 
 </body>
-</html>
+</html>>
