@@ -1,113 +1,47 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>🔥 Kampung Theme Engine</title>
-<style>
-body{
-font-family: Arial;
-background:#111;
-color:white;
-text-align:center;
-padding:20px;
-}
-
-canvas{
-max-width:100%;
-border-radius:10px;
-margin-top:10px;
-}
-
-select, button, input{
-padding:10px;
-margin:10px;
-border-radius:6px;
-border:none;
-}
-
-button{
-background:#00c853;
-color:black;
-font-weight:bold;
-cursor:pointer;
-}
-</style>
-</head>
-<body>
-
-<h1>🔥 Kampung Theme Engine</h1>
-
-<input type="file" accept="image/*" onchange="loadImage(event)">
-
-<br>
-
-<select id="theme">
-<option value="ocean">🌊 Ocean Theme</option>
-<option value="forest">🌲 Forest Theme</option>
-<option value="sunset">🌅 Sunset Theme</option>
-<option value="colorful">🎨 Colorful Theme</option>
-</select>
-
-<br>
-
-<button onclick="applyTheme()">Apply Theme</button>
-
-<br>
-
-<canvas id="canvas"></canvas>
-
-<script>
-
-let image = new Image();
-let canvas = document.getElementById("canvas");
-let ctx = canvas.getContext("2d");
-
-function loadImage(event){
-let reader = new FileReader();
-reader.onload = function(e){
-image.src = e.target.result;
-image.onload = function(){
-canvas.width = image.width;
-canvas.height = image.height;
-ctx.drawImage(image,0,0);
-}
-}
-reader.readAsDataURL(event.target.files[0]);
-}
-
 function applyTheme(){
 
 let theme = document.getElementById("theme").value;
 
+// Gambar ulang original dulu
+ctx.clearRect(0,0,canvas.width,canvas.height);
+ctx.drawImage(image,0,0,canvas.width,canvas.height);
+
+// Buat overlay
+let gradient = ctx.createLinearGradient(0,0,canvas.width,canvas.height);
+
+if(theme === "ocean"){
+gradient.addColorStop(0,"rgba(0,100,255,0.4)");
+gradient.addColorStop(1,"rgba(0,200,255,0.4)");
+}
+
+if(theme === "forest"){
+gradient.addColorStop(0,"rgba(0,150,50,0.4)");
+gradient.addColorStop(1,"rgba(0,100,0,0.5)");
+}
+
+if(theme === "sunset"){
+gradient.addColorStop(0,"rgba(255,100,0,0.4)");
+gradient.addColorStop(1,"rgba(255,0,100,0.4)");
+}
+
+if(theme === "colorful"){
+gradient.addColorStop(0,"rgba(255,0,255,0.3)");
+gradient.addColorStop(1,"rgba(0,255,255,0.3)");
+}
+
+// Blend overlay
+ctx.fillStyle = gradient;
+ctx.fillRect(0,0,canvas.width,canvas.height);
+
+// Tambah contrast ringan
 let imgData = ctx.getImageData(0,0,canvas.width,canvas.height);
 let data = imgData.data;
 
 for(let i=0;i<data.length;i+=4){
-
-if(theme === "ocean"){
-data[i+2] += 50;
-}
-
-if(theme === "forest"){
-data[i+1] += 40;
-}
-
-if(theme === "sunset"){
-data[i] += 40;
-data[i+1] += 20;
-}
-
-if(theme === "colorful"){
-data[i] += Math.random()*50;
-data[i+1] += Math.random()*50;
-data[i+2] += Math.random()*50;
-}
-
+data[i] = data[i] * 1.1;
+data[i+1] = data[i+1] * 1.1;
+data[i+2] = data[i+2] * 1.1;
 }
 
 ctx.putImageData(imgData,0,0);
 }
-
-</script>
-
-</body>
-</html>>
